@@ -1,18 +1,18 @@
 <template>
     <div class="table">
-        <div class="table-line">
+        <div class="table-line first-line">
             <div v-for="(item, index) in title" :key="index" class="table-item">{{ item }}</div>
         </div>
-        <div class="table-line" v-for="(city) in cities" :key="city.id">
-            <p class="table-item">{{ city.name }} <strong @click="toggleStatus(city.id)">-</strong></p>
-            <p class="table-item">min temp</p>
-            <p class="table-item">max temp</p>
-        </div>
+        <city-info class="table-line" v-bind="$attrs" v-for="city in cities" :key="city.id" :city="city" />
     </div>
 </template>
 
 <script>
+import CityInfo from './CityInfo.vue';
 export default {
+    components: {
+        CityInfo
+    },
     props: {
         cities: {
             type: Array,
@@ -25,9 +25,6 @@ export default {
         }
     },
     methods: {
-        toggleStatus(id) {
-            this.$emit('togglestatus', id)
-        }
     }
 }
 </script>
@@ -40,15 +37,26 @@ export default {
     border-top: none;
 }
 
+.table-line:first-child {
+    margin: 10px 0;
+}
+
 .table-line {
     display: flex;
     width: 100%;
     justify-content: space-around;
 }
 
+.table-line.first-line {
+    background-color: teal;
+    color: white;
+}
+
 .table-item {
     width: 150px;
     text-align: center;
     font-size: 20px;
+    position: relative;
+    padding: 10px;
 }
 </style>

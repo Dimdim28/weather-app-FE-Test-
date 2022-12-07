@@ -26,7 +26,6 @@ export default {
   },
   methods: {
     toggleActivityStatus(id) {
-      console.log('id =', id)
       const city = this.cities[id]
       city.active = !city.active
     }

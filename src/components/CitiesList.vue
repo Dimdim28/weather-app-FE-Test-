@@ -1,11 +1,12 @@
 <template>
-  <div v-if="cities.length" class="citiesList">
+  <div class="citiesList">
+    <p class="message" v-if="!cities.length"> You have choosed all cities from the list =)</p>
     <city-button v-bind="$attrs" v-for="city in cities" :city="city" :key="city.id" />
   </div>
 </template>
     
 <script>
-import CityButton from '@/components/CityButton.vue'
+import CityButton from './CityButton.vue'
 export default {
   components: {
     CityButton
@@ -25,8 +26,10 @@ export default {
   border: 2px solid teal;
   display: flex;
   justify-content: center;
+  align-items: center;
   padding: 5px 10px;
   font-size: 20px;
   font-weight: 600;
+  height: 61px;
 }
 </style>
