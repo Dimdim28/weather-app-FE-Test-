@@ -17,10 +17,10 @@ export default {
     return {
       cities: [
         { id: 0, name: 'Kyiv', active: false },
-        { id: 1, name: 'Herson', active: false },
-        { id: 2, name: 'Odessa', active: false },
-        { id: 3, name: 'Dnipro', active: false },
-        { id: 4, name: 'Lviv', active: false }
+        { id: 1, name: 'Moscow', active: false },
+        { id: 2, name: 'London', active: false },
+        { id: 3, name: 'Berlin', active: false },
+        { id: 4, name: 'Paris', active: false }
       ]
     }
   },
