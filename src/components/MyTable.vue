@@ -9,18 +9,23 @@
     </div>
     <div v-else>грузится</div>
     <ul class="days-list">
+        <li @click="firstDay"> first </li>
         <li @click="prevDay"> prev </li>
         <li>{{ сurrentDay }}</li>
         <li @click="nextDay"> next </li>
+        <li @click="lastDay"> last </li>
+
     </ul>
+    <sorting-bar class="sortWrapper" :options="sortOptions" v-model="selectedSort" />
 </template>
 
 <script>
 import CityInfo from './CityInfo.vue';
+import SortingBar from './SortingBar.vue';
 import axios from 'axios';
 export default {
     components: {
-        CityInfo
+        CityInfo, SortingBar
     },
     props: {
         cities: {
@@ -43,6 +48,8 @@ export default {
             isWeatherLoading: false,
             cityData: [],
             сurrentDay: 0,
+            selectedSort: '',
+            sortOptions: [{ value: 'min', name: 'minTemp' }, { value: 'max', name: 'maxTemp' }]
         }
     },
     methods: {
@@ -84,14 +91,31 @@ export default {
                 this.сurrentDay--;
                 this.fetchWeather();
             }
+        },
+        lastDay() {
+            if (this.сurrentDay !== 6) {
+                this.сurrentDay = 6;
+                this.fetchWeather();
+            }
+        },
+        firstDay() {
+            if (this.сurrentDay != 0) {
+                this.сurrentDay = 0;
+                this.fetchWeather();
+            }
+        },
+        changeCurrentOption(event) {
+            this.selectedSort = event.target.value;
         }
-    },
-    created() {
-        this.fetchWeather()
     },
     watch: {
         cities() {
             this.fetchWeather();
+        },
+        selectedSort(newValue) {
+            this.cityData.sort((city1, city2) => {
+                return city1[newValue] - city2[newValue];
+            })
         }
     },
 
@@ -140,15 +164,25 @@ export default {
     padding: 10px;
     font-size: 20px;
     list-style: none;
+    cursor: pointer;
+}
+
+.days-list li:nth-child(3) {
+    border-right: 2px solid white;
+    border-left: 2px solid white;
+    cursor: grab;
 }
 
 .days-list li:first-child {
     border-right: 2px solid white;
-    cursor: pointer;
 }
 
 .days-list li:last-child {
     border-left: 2px solid white;
-    cursor: pointer;
+}
+
+.sortWrapper {
+    position: absolute;
+    right: 0;
 }
 </style>
