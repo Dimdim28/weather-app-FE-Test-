@@ -1,7 +1,6 @@
 <template>
     <div class="table-line" @mouseover="hover = true" @mouseleave="hover = false" :class="{ hovered: hover }">
-        <p @click="toggleStatus(city.id)" class="table-item">{{ city.name }} <strong class="remove"
-                v-if="hover">x</strong></p>
+        <p @click="toggleStatus(id)" class="table-item">{{ name }} <strong class="remove" v-if="hover">x</strong></p>
         <p class="table-item">{{ minTemp }}</p>
         <p class="table-item">{{ maxTemp }}</p>
     </div>
@@ -10,8 +9,12 @@
 <script>
 export default {
     props: {
-        city: {
-            type: Object,
+        id: {
+            type: Number,
+            required: true
+        },
+        name: {
+            type: String,
             required: true
         },
         maxTemp: {

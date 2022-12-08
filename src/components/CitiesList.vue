@@ -23,7 +23,6 @@ export default {
 <style scoped>
 .citiesList {
   color: teal;
-  border: 2px solid teal;
   display: flex;
   justify-content: center;
   align-items: center;

@@ -1,14 +1,18 @@
 <template>
     <div v-if="!cities.length"> Вы ничего не выбрали</div>
-    <div v-else-if="!isLoading" class="table">
+    <div v-else-if="!isWeatherLoading" class="table">
         <div class="table-line first-line">
             <div v-for="(item, index) in title" :key="index" class="table-item">{{ item }}</div>
         </div>
-        <city-info class="table-line" v-bind="$attrs" v-for="city in cities" :key="city.id" :city="city"
-            :minTemp="fetchedTemperatures[city.id]?.temperature_2m_min[0]"
-            :maxTemp="fetchedTemperatures[city.id]?.temperature_2m_max[0]" />
+        <city-info class="table-line" v-bind="$attrs" v-for="city in cityData" :key="city.id" :name="city.name"
+            :id="city.id" :minTemp="city.min" :maxTemp="city.max" />
     </div>
     <div v-else>грузится</div>
+    <ul class="days-list">
+        <li @click="prevDay"> prev </li>
+        <li>{{ сurrentDay }}</li>
+        <li @click="nextDay"> next </li>
+    </ul>
 </template>
 
 <script>
@@ -34,37 +38,63 @@ export default {
                 "Berlin": [52.52, 13.41],
                 "Paris": [48.85, 2.35]
             },
-            fetchedTemperatures: [],
-            isLoading: true,
+            maxTemps: [],
+            minTemps: [],
+            isWeatherLoading: false,
+            cityData: [],
+            сurrentDay: 0,
         }
     },
     methods: {
         async fetchWeather() {
-            this.isLoading = true;
+            this.isWeatherLoading = true;
             try {
                 Promise.all(this.cities.map(city => {
                     const [lat, long] = this.paramsToFetch[city.name];
                     return axios
                         .get(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${long}&daily=temperature_2m_max,temperature_2m_min&timezone=Europe%2FMoscow`);
                 })).then(responses => responses.map(el => el.data.daily)).then(data => {
-                    this.fetchedTemperatures = data;
-                    console.log(data);
-                });
+                    const min = data.map((city) => city.temperature_2m_min[this.сurrentDay]);
+                    const max = data.map((city) => city.temperature_2m_max[this.сurrentDay]);
+                    this.maxTemps = max;
+                    this.minTemps = min
+                }).then(() => this.setData())
             } catch (e) {
                 console.log(e)
             } finally {
-                this.isLoading = false;
+                this.isWeatherLoading = false;
+            }
+        },
+        setData() {
+            this.cityData = this.cities.map(el => {
+                const { id, name } = el;
+                const max = this.maxTemps[id];
+                const min = this.minTemps[id];
+                return { id, name, max, min };
+            })
+        },
+        nextDay() {
+            if (this.сurrentDay < 6) {
+                this.сurrentDay++;
+                this.fetchWeather();
+            }
+        },
+        prevDay() {
+            if (this.сurrentDay > 0) {
+                this.сurrentDay--;
+                this.fetchWeather();
             }
         }
     },
-    mounted() {
+    created() {
         this.fetchWeather()
     },
     watch: {
         cities() {
             this.fetchWeather();
         }
-    }
+    },
+
 }
 </script>
 
@@ -72,8 +102,7 @@ export default {
 .table {
     height: 100%;
     color: teal;
-    border: 2px solid teal;
-    border-top: none;
+
 }
 
 .table-line:first-child {
@@ -97,5 +126,29 @@ export default {
     font-size: 20px;
     position: relative;
     padding: 10px;
+}
+
+.days-list {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.days-list li {
+    background-color: teal;
+    color: white;
+    padding: 10px;
+    font-size: 20px;
+    list-style: none;
+}
+
+.days-list li:first-child {
+    border-right: 2px solid white;
+    cursor: pointer;
+}
+
+.days-list li:last-child {
+    border-left: 2px solid white;
+    cursor: pointer;
 }
 </style>
